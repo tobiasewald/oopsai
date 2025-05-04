@@ -7,7 +7,25 @@ class OllamaApi:
     HOST = "https://f2ki-h100-1.f2.htw-berlin.de"
     PORT = 11435
 
+    TIMEOUT = 120
+
     FALSE_RETURN = {"result": None, "time": 0, "token": 0, "info": {}}
+
+    DEFAULT_OPTIONS = {
+        "mirostat": 0,          # Default: 0
+        "mirostat_eta": 0.1,    # Default: 0.1
+        "mirostat_tau": 5.0,    # Default: 5.0
+        "num_ctx": 2048,        # Default: 2048
+        "repeat_last_n": 64,    # Default: 64, 0 = disabled, -1 = num_ctx
+        "repeat_penalty": 1.1,  # Default: 1.1
+        "temperature": 0.8,     # Default: 0.8
+        "seed": 0,              # Default: 0
+        "stop": [],             # No default
+        "num_predict": -1,      # Default: -1, infinite generation
+        "top_k": 40,            # Default: 40
+        "top_p": 0.9,           # Default: 0.9
+        "min_p": 0.0            # Default: 0.0
+    }
 
     @staticmethod
     def fix_invalid_escapes(s):
@@ -33,11 +51,15 @@ class OllamaApi:
                 return False
 
     @classmethod
-    def completion(cls, prompt:str, model="phi4:latest", schema=None):
+    def completion(cls, prompt:str, model="phi4:latest", schema=None, options=None):
         payload = {
             "model": model,
             "prompt" : prompt,
-            "stream" : False
+            "stream" : False,
+            "options": {
+                **cls.DEFAULT_OPTIONS,
+                **options
+            } if options is not None else cls.DEFAULT_OPTIONS
         }
         if schema is not None:
             payload["format"] = schema
@@ -45,11 +67,15 @@ class OllamaApi:
         return cls.api_request(payload, force_json=False if schema is None else True)
 
     @classmethod
-    def chat(cls, chat, model="phi4:latest", schema=None):
+    def chat(cls, chat, model="phi4:latest", schema=None, options=None):
         payload = {
             "model": model,
             "messages": chat,
-            "stream": False
+            "stream": False,
+            "options": {
+                **cls.DEFAULT_OPTIONS,
+                **options
+            } if options is not None else cls.DEFAULT_OPTIONS
         }
         if schema is not None:
             payload["format"] = schema
@@ -67,10 +93,18 @@ class OllamaApi:
 
         headers = {
             "Content-Type": "application/json",
-            "accept": "application/json",
+            "accept": "application/json"
         }
 
-        response = requests.post(url, headers=headers, json=payload, stream=False, timeout=120)
+        try:
+            response = requests.post(url, headers=headers, json=payload, stream=False, timeout=cls.TIMEOUT)
+        except requests.exceptions.Timeout:
+            print(f"The request took to long. Adjust the timeout ({cls.TIMEOUT}) as needed")
+            return cls.FALSE_RETURN
+        except Exception as e:
+            print(f"Request exception: {e}")
+            return cls.FALSE_RETURN
+
         return cls.secure_json_response(response) if force_json else cls.secure_text_response(response)
 
 
@@ -162,7 +196,6 @@ if __name__ == "__main__":
     # Example 1
     # Prompt Completion - Text return
     print("\n------\nExample 1:")
-
     msg = "Please write me your favourite haiku"
     completion_result = OllamaApi.completion(msg, model=model_name)
     print(json.dumps(completion_result, indent=4))
