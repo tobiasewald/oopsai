@@ -1,0 +1,40 @@
+stages:
+  - scan
+  - analyze
+  - notify
+
+trivy_scan:
+  stage: scan
+  script:
+    - chmod +x scanner/run_trivy.sh
+    - ./scanner/run_trivy.sh
+  artifacts:
+    paths:
+      - trivy_report.json
+
+owasp_scan:
+  stage: scan
+  script:
+    - chmod +x scanner/run_owasp.sh
+    - ./scanner/run_owasp.sh
+  artifacts:
+    paths:
+      - dependency-check-report.json
+
+ollama_analysis:
+  stage: analyze
+  script:
+    - curl -X POST http://ai-service:8000/analyze -F "trivy=@trivy_report.json" -F "owasp=@dependency-check-report.json" -o ai_response.json
+  dependencies:
+    - trivy_scan
+    - owasp_scan
+  artifacts:
+    paths:
+      - ai_response.json
+
+discord_notify:
+  stage: notify
+  script:
+    - python3 bot/send_to_discord.py ai_response.json
+  dependencies:
+    - ollama_analysis
