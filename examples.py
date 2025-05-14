@@ -12,9 +12,6 @@ class OllamaApi:
     FALSE_RETURN = {"result": None, "time": 0, "token": 0, "info": {}}
 
     DEFAULT_OPTIONS = {
-        "mirostat": 0,          # Default: 0
-        "mirostat_eta": 0.1,    # Default: 0.1
-        "mirostat_tau": 5.0,    # Default: 5.0
         "num_ctx": 2048,        # Default: 2048
         "repeat_last_n": 64,    # Default: 64, 0 = disabled, -1 = num_ctx
         "repeat_penalty": 1.1,  # Default: 1.1
