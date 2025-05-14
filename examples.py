@@ -8,6 +8,7 @@ class OllamaApi:
     PORT = 11435
 
     TIMEOUT = 120
+    STREAM_RESPONSE = False # Only for debug purposes. !! Result will be None !!
 
     FALSE_RETURN = {"result": None, "time": 0, "token": 0, "info": {}}
 
@@ -52,7 +53,7 @@ class OllamaApi:
         payload = {
             "model": model,
             "prompt" : prompt,
-            "stream" : False,
+            "stream": cls.STREAM_RESPONSE,
             "options": {
                 **cls.DEFAULT_OPTIONS,
                 **options
@@ -68,7 +69,7 @@ class OllamaApi:
         payload = {
             "model": model,
             "messages": chat,
-            "stream": False,
+            "stream": cls.STREAM_RESPONSE,
             "options": {
                 **cls.DEFAULT_OPTIONS,
                 **options
@@ -94,12 +95,29 @@ class OllamaApi:
         }
 
         try:
-            response = requests.post(url, headers=headers, json=payload, stream=False, timeout=cls.TIMEOUT)
+            response = requests.post(url, headers=headers, json=payload, stream=cls.STREAM_RESPONSE, timeout=cls.TIMEOUT)
+
+            if cls.STREAM_RESPONSE:
+                for line in response.iter_lines(decode_unicode=True):
+                    try:
+                        chunk = json.loads(line)
+
+                        if 'message' in chunk and 'content' in chunk['message']:
+                            content = chunk['message']['content']
+                            print(content, end='', flush=True)
+
+                        if 'done' in chunk and chunk['done']:
+                            break  # Exit the loop if done is True
+                    except json.JSONDecodeError as e:
+                        print(f"ERROR: Failed to decode JSON during streaming: {e}")
+                return cls.FALSE_RETURN
+            else:
+                return cls.secure_json_response(response) if force_json else cls.secure_text_response(response)
         except requests.exceptions.Timeout:
-            print(f"The request took to long. Adjust the timeout ({cls.TIMEOUT}) as needed")
+            print(f"ERROR: The request took to long. Adjust the timeout ({cls.TIMEOUT}) as needed")
             return cls.FALSE_RETURN
         except Exception as e:
-            print(f"Request exception: {e}")
+            print(f"ERROR: Request exception: {e}")
             return cls.FALSE_RETURN
 
         return cls.secure_json_response(response) if force_json else cls.secure_text_response(response)
@@ -119,14 +137,14 @@ class OllamaApi:
         thinking_block = False
 
         if message.strip().startswith("<think>"):
-            print('Model returned <think> reasoning block before JSON')
+            print('WARN: Model returned <think> reasoning block before JSON')
             message = re.sub(r"^\s*<think>.*?</think>\s*", "", message, flags=re.DOTALL).strip()
             thinking_block = True
 
         match = re.search(r'```json(.*?)```', message, re.DOTALL)
         if match:
             # Remove everything except the content in "```json" to "```"
-            print('Model returned markdown instead of only JSON')
+            print('WARN: Model returned markdown instead of only JSON')
             message = match.group(1).strip()
             markdown_response = True
 
@@ -143,24 +161,24 @@ class OllamaApi:
             return text_response
 
         except json.JSONDecodeError as e:
-            print(f"Failed to decode JSON: {e}")
+            print(f"ERROR: Failed to decode JSON: {e}")
             return cls.FALSE_RETURN
 
         except Exception as e:
-            print(f"Failed to parse JSON: {e}")
+            print(f"ERROR: Failed to parse JSON: {e}")
             return cls.FALSE_RETURN
 
     @classmethod
     def secure_text_response(cls, response):
         if response.status_code != 200:
-            print(f"Request failed with status {response.status_code}: {response.text}")
+            print(f"ERROR: Request failed with status {response.status_code}: {response.text}")
             return cls.FALSE_RETURN
 
         try:
             parsed_json = response.json()
 
             if 'done' not in parsed_json or parsed_json.get('done') is False:
-                print("Response has returned but Model didn't complete the answer")
+                print("ERROR: Response has returned but Model didn't complete the answer")
                 return cls.FALSE_RETURN
 
             # LLM Chat return as string
@@ -178,11 +196,11 @@ class OllamaApi:
             }
 
         except json.JSONDecodeError as e:
-            print(f"Failed to decode JSON: {e}")
+            print(f"ERROR: Failed to decode JSON: {e}")
             return cls.FALSE_RETURN
 
         except Exception as e:
-            print(f"Failed to parse JSON: {e}")
+            print(f"ERROR: Failed to parse JSON: {e}")
             return cls.FALSE_RETURN
 
 if __name__ == "__main__":
