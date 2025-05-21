@@ -15,8 +15,6 @@ jobs:
 
   renovate:
     runs-on: self-hosted
-    container:
-      image: renovate/renovate:latest
     steps:
       - name: Run Renovate
         run: renovate
@@ -27,44 +25,28 @@ jobs:
 
   trivy_scan:
     runs-on: self-hosted
-    container:
-      image: docker:24.0
-    services:
-      docker:
-        image: docker:24.0-dind
     steps:
       - uses: actions/checkout@v3
       - name: Run Trivy
         run: |
-          apk add --no-cache bash curl
-          chmod +x scripts/run_trivy.sh
-          ./scripts/run_trivy.sh
+          docker run --rm -v ${{ github.workspace }}:/project aquasec/trivy fs /project > trivy-report.json
 
   owasp_scan:
     runs-on: self-hosted
-    container:
-      image: docker:24.0
-    services:
-      docker:
-        image: docker:24.0-dind
     steps:
       - uses: actions/checkout@v3
       - name: Run OWASP Dependency Check
         run: |
-          apk add --no-cache bash curl unzip openjdk17-jre
           chmod +x scripts/run_owasp.sh
           ./scripts/run_owasp.sh
 
   ai_analysis:
     runs-on: self-hosted
-    container:
-      image: python:3.11
     steps:
       - uses: actions/checkout@v3
       - name: Run LLM Analysis
         run: |
           pip install requests
-          apt-get update && apt-get install -y jq bc
           python scripts/ai_processor.py
           ./scripts/check_criticality.sh
 
@@ -92,18 +74,16 @@ jobs:
   discord_notify:
     needs: ai_analysis
     runs-on: self-hosted
-    container:
-      image: alpine:3.19
     steps:
       - uses: actions/checkout@v3
       - name: Notify Discord
         run: |
-          apk add --no-cache curl jq
-          export CRIT=$(jq -r '.criticality' ai_response.json)
-          export COMMENT=$(jq -r '.comment' ai_response.json)
-          export MEME=$(jq -r '.meme' ai_meme.json)
+          curl -sL https://github.com/stedolan/jq/releases/latest/download/jq-win64.exe -o jq.exe
+          export CRIT=$(jq.exe -r '.criticality' ai_response.json)
+          export COMMENT=$(jq.exe -r '.comment' ai_response.json)
+          export MEME=$(jq.exe -r '.meme' ai_meme.json)
           curl -X POST -H "Content-Type: application/json" \
-            -d "$(jq -n --arg crit \"$CRIT\" \
+            -d "$(jq.exe -n --arg crit \"$CRIT\" \
                          --arg comment \"$COMMENT\" \
                          --arg meme \"$MEME\" \
             '{content: "\ud83d\udea8 **Sicherheitsanalyse abgeschlossen**\\n\\n\ud83d\udd22 *Criticality:* \($crit)/10\\n\ud83e\udde0 *Kommentar:* \($comment)\\n\\n\ud83c\udf1d *Meme:* \($meme)"}')" \

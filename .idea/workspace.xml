@@ -4,28 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="067bab10-bbcc-45c1-9caa-81b11205490e" name="Changes" comment="clean up">
-      <change afterPath="$PROJECT_DIR$/.github/workflows/ci.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitlab-ci.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="067bab10-bbcc-45c1-9caa-81b11205490e" name="Changes" comment="switch from gitlab to github // v2.1">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/ci.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/ci.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai/app.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai/requirements.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai_response.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/send_to_discord.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/htw_ollama/examples.py" beforeDir="false" afterPath="$PROJECT_DIR$/htw_ollama/examples.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/k8s/ai-deployment.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/k8s/bot-deployment.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scanner-test/requirements.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scanner-test/vulnerable_app.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scanner/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scanner/run_owasp.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scanner/run_trivy.sh" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_request.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/trivy_report.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,6 +40,7 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -176,7 +159,7 @@
       <workItem from="1746887787757" duration="2787000" />
       <workItem from="1746895052639" duration="12548000" />
       <workItem from="1747821302937" duration="196000" />
-      <workItem from="1747821507974" duration="883000" />
+      <workItem from="1747821507974" duration="1517000" />
     </task>
     <task id="LOCAL-00001" summary="v1">
       <option name="closed" value="true" />
@@ -522,7 +505,23 @@
       <option name="project" value="LOCAL" />
       <updated>1746907489073</updated>
     </task>
-    <option name="localTasksCounter" value="44" />
+    <task id="LOCAL-00044" summary="switch from gitlab to github // v2">
+      <option name="closed" value="true" />
+      <created>1747822632516</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1747822632516</updated>
+    </task>
+    <task id="LOCAL-00045" summary="switch from gitlab to github // v2.1">
+      <option name="closed" value="true" />
+      <created>1747822901506</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1747822901506</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -553,7 +552,9 @@
     <MESSAGE value="test codellama" />
     <MESSAGE value="test discord" />
     <MESSAGE value="clean up" />
-    <option name="LAST_COMMIT_MESSAGE" value="" />
+    <MESSAGE value="switch from gitlab to github // v2" />
+    <MESSAGE value="switch from gitlab to github // v2.1" />
+    <option name="LAST_COMMIT_MESSAGE" value="switch from gitlab to github // v2.1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

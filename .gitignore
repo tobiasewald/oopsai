@@ -1,0 +1,14 @@
+# IDE-Dateien
+.idea/
+.vscode/
+
+# LLM-Helper
+htw_ollama/
+
+# Ausgaben
+*.log
+*.json
+
+# OS-spezifisch
+.DS_Store
+Thumbs.db
