@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="067bab10-bbcc-45c1-9caa-81b11205490e" name="Changes" comment="switch from gitlab to github // v2.1">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/ci.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/ci.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="067bab10-bbcc-45c1-9caa-81b11205490e" name="Changes" comment="switch from gitlab to github // v2.2" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -159,7 +155,7 @@
       <workItem from="1746887787757" duration="2787000" />
       <workItem from="1746895052639" duration="12548000" />
       <workItem from="1747821302937" duration="196000" />
-      <workItem from="1747821507974" duration="1517000" />
+      <workItem from="1747821507974" duration="2025000" />
     </task>
     <task id="LOCAL-00001" summary="v1">
       <option name="closed" value="true" />
@@ -521,7 +517,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747822901506</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="switch from gitlab to github // v2.2">
+      <option name="closed" value="true" />
+      <created>1747823052877</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1747823052877</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -554,7 +558,8 @@
     <MESSAGE value="clean up" />
     <MESSAGE value="switch from gitlab to github // v2" />
     <MESSAGE value="switch from gitlab to github // v2.1" />
-    <option name="LAST_COMMIT_MESSAGE" value="switch from gitlab to github // v2.1" />
+    <MESSAGE value="switch from gitlab to github // v2.2" />
+    <option name="LAST_COMMIT_MESSAGE" value="switch from gitlab to github // v2.2" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
