@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="067bab10-bbcc-45c1-9caa-81b11205490e" name="Changes" comment="switch from gitlab to github // v2.2" />
+    <list default="true" id="067bab10-bbcc-45c1-9caa-81b11205490e" name="Changes" comment="switch from gitlab to github // v2.2">
+      <change afterPath="$PROJECT_DIR$/htw_ollama_api/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/htw_ollama_api/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/htw_ollama_api/examples.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/htw_ollama/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/htw_ollama/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/htw_ollama/examples.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/ai_processor.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/ai_processor.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -155,7 +164,7 @@
       <workItem from="1746887787757" duration="2787000" />
       <workItem from="1746895052639" duration="12548000" />
       <workItem from="1747821302937" duration="196000" />
-      <workItem from="1747821507974" duration="2025000" />
+      <workItem from="1747821507974" duration="3156000" />
     </task>
     <task id="LOCAL-00001" summary="v1">
       <option name="closed" value="true" />
@@ -525,7 +534,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747823052877</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="switch from gitlab to github // v2.2">
+      <option name="closed" value="true" />
+      <created>1747823815003</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1747823815003</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

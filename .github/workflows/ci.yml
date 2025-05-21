@@ -16,12 +16,13 @@ jobs:
   renovate:
     runs-on: self-hosted
     steps:
-      - name: Run Renovate
-        run: renovate
-        env:
-          RENOVATE_PLATFORM: github
-          RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
-          RENOVATE_REPOSITORIES: tobiasewald/oopsai
+      - name: Run Renovate via Docker
+        run: |
+          docker run --rm \
+            -e RENOVATE_TOKEN=${{ secrets.RENOVATE_TOKEN }} \
+            -e RENOVATE_PLATFORM=github \
+            -e RENOVATE_REPOSITORIES=tobiasewald/oopsai \
+            renovate/renovate
 
   trivy_scan:
     runs-on: self-hosted
@@ -37,8 +38,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Run OWASP Dependency Check
         run: |
-          chmod +x scripts/run_owasp.sh
-          ./scripts/run_owasp.sh
+          scripts/run_owasp.sh
 
   ai_analysis:
     runs-on: self-hosted
@@ -53,6 +53,9 @@ jobs:
   deploy_production:
     needs: ai_analysis
     runs-on: self-hosted
+    env:
+      KUBE_NAMESPACE: oops-ai
+      DEPLOYMENT_NAME: oops-ai-frontend
     steps:
       - uses: actions/checkout@v3
       - name: Deploy to Kubernetes
@@ -63,6 +66,9 @@ jobs:
     if: failure()
     needs: ai_analysis
     runs-on: self-hosted
+    env:
+      KUBE_NAMESPACE: oops-ai
+      DEPLOYMENT_NAME: oops-ai-frontend
     steps:
       - uses: actions/checkout@v3
       - name: Rollback Deployment
@@ -79,12 +85,8 @@ jobs:
       - name: Notify Discord
         run: |
           curl -sL https://github.com/stedolan/jq/releases/latest/download/jq-win64.exe -o jq.exe
-          export CRIT=$(jq.exe -r '.criticality' ai_response.json)
-          export COMMENT=$(jq.exe -r '.comment' ai_response.json)
-          export MEME=$(jq.exe -r '.meme' ai_meme.json)
-          curl -X POST -H "Content-Type: application/json" \
-            -d "$(jq.exe -n --arg crit \"$CRIT\" \
-                         --arg comment \"$COMMENT\" \
-                         --arg meme \"$MEME\" \
-            '{content: "\ud83d\udea8 **Sicherheitsanalyse abgeschlossen**\\n\\n\ud83d\udd22 *Criticality:* \($crit)/10\\n\ud83e\udde0 *Kommentar:* \($comment)\\n\\n\ud83c\udf1d *Meme:* \($meme)"}')" \
-            "$DISCORD_WEBHOOK"
+          $CRIT = ./jq.exe -r '.criticality' ai_response.json
+          $COMMENT = ./jq.exe -r '.comment' ai_response.json
+          $MEME = ./jq.exe -r '.meme' ai_meme.json
+          $payload = ./jq.exe -n --arg crit "$CRIT" --arg comment "$COMMENT" --arg meme "$MEME" '{content: "🚨 **Sicherheitsanalyse abgeschlossen**\n\n🔢 *Criticality:* \($crit)/10\n🧠 *Kommentar:* \($comment)\n\n🌝 *Meme:* \($meme)"}'
+          curl -X POST -H "Content-Type: application/json" -d "$payload" "$DISCORD_WEBHOOK"

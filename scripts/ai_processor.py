@@ -1,5 +1,5 @@
 import json
-from htw_ollama.examples import OllamaApi
+from htw_ollama_api.examples import OllamaApi
 
 
 def analyze_security(trivy_data, owasp_data):
