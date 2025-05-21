@@ -1,0 +1,3 @@
+flask
+requests
+htw-ollama-py @ git+https://github.com/sotenck/htw-ollama-py.git

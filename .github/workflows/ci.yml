@@ -1,0 +1,110 @@
+name: Oops.ai CI Pipeline
+
+on:
+  push:
+    branches: [ master ]
+
+env:
+  CRITICALITY_THRESHOLD: 8.0
+  KUBE_NAMESPACE: oops-ai
+  DEPLOYMENT_NAME: oops-ai-frontend
+  OLLAMA_API_URL: ${{ secrets.OLLAMA_API_URL }}
+  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+
+jobs:
+
+  renovate:
+    runs-on: self-hosted
+    container:
+      image: renovate/renovate:latest
+    steps:
+      - name: Run Renovate
+        run: renovate
+        env:
+          RENOVATE_PLATFORM: github
+          RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
+          RENOVATE_REPOSITORIES: tobiasewald/oopsai
+
+  trivy_scan:
+    runs-on: self-hosted
+    container:
+      image: docker:24.0
+    services:
+      docker:
+        image: docker:24.0-dind
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Trivy
+        run: |
+          apk add --no-cache bash curl
+          chmod +x scripts/run_trivy.sh
+          ./scripts/run_trivy.sh
+
+  owasp_scan:
+    runs-on: self-hosted
+    container:
+      image: docker:24.0
+    services:
+      docker:
+        image: docker:24.0-dind
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run OWASP Dependency Check
+        run: |
+          apk add --no-cache bash curl unzip openjdk17-jre
+          chmod +x scripts/run_owasp.sh
+          ./scripts/run_owasp.sh
+
+  ai_analysis:
+    runs-on: self-hosted
+    container:
+      image: python:3.11
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run LLM Analysis
+        run: |
+          pip install requests
+          apt-get update && apt-get install -y jq bc
+          python scripts/ai_processor.py
+          ./scripts/check_criticality.sh
+
+  deploy_production:
+    needs: ai_analysis
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f kubernetes/ -n $KUBE_NAMESPACE
+
+  auto_rollback:
+    if: failure()
+    needs: ai_analysis
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+      - name: Rollback Deployment
+        run: |
+          echo "Critical vulnerabilities detected! Initiating rollback..."
+          kubectl rollout undo deployment/$DEPLOYMENT_NAME -n $KUBE_NAMESPACE
+          ./scripts/send_rollback_notification.sh
+
+  discord_notify:
+    needs: ai_analysis
+    runs-on: self-hosted
+    container:
+      image: alpine:3.19
+    steps:
+      - uses: actions/checkout@v3
+      - name: Notify Discord
+        run: |
+          apk add --no-cache curl jq
+          export CRIT=$(jq -r '.criticality' ai_response.json)
+          export COMMENT=$(jq -r '.comment' ai_response.json)
+          export MEME=$(jq -r '.meme' ai_meme.json)
+          curl -X POST -H "Content-Type: application/json" \
+            -d "$(jq -n --arg crit \"$CRIT\" \
+                         --arg comment \"$COMMENT\" \
+                         --arg meme \"$MEME\" \
+            '{content: "\ud83d\udea8 **Sicherheitsanalyse abgeschlossen**\\n\\n\ud83d\udd22 *Criticality:* \($crit)/10\\n\ud83e\udde0 *Kommentar:* \($comment)\\n\\n\ud83c\udf1d *Meme:* \($meme)"}')" \
+            "$DISCORD_WEBHOOK"
