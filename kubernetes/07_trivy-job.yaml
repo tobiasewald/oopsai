@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: trivy-scan
+  namespace: oops-ai
+spec:
+  schedule: "0 3 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: trivy
+            image: aquasec/trivy:latest
+            args:
+            - fs
+            - --format
+            - json
+            - --output
+            - /reports/trivy-report.json
+            - /app
+            volumeMounts:
+            - name: app-code
+              mountPath: /app
+            - name: reports
+              mountPath: /reports
+          restartPolicy: Never
+          volumes:
+          - name: app-code
+            hostPath:
+              path: /path/to/code
+          - name: reports
+            emptyDir: {}

@@ -1,0 +1,24 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: oops-ai  # Wichtig: Namespace hier angeben
+  name: gitlab-rollback-role
+rules:
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "patch", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: gitlab-rollback-binding
+  namespace: oops-ai  # Namespace hier angeben
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: oops-ai  # Namespace hier angeben
+roleRef:
+  kind: Role
+  name: gitlab-rollback-role
+  apiGroup: rbac.authorization.k8s.io

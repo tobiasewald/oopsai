@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: owasp-scan
+  namespace: oops-ai
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: owasp-scanner
+            image: owasp/dependency-check:latest
+            args:
+            - --scan
+            - /app
+            - --format
+            - JSON
+            - --out
+            - /reports
+            volumeMounts:
+            - name: code-volume
+              mountPath: /app
+            - name: report-volume
+              mountPath: /reports
+          restartPolicy: Never
+          volumes:
+          - name: code-volume
+            hostPath:
+              path: /path/to/code
+          - name: report-volume
+            emptyDir: {}
